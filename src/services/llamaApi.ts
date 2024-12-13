@@ -1,18 +1,19 @@
 import { API_HEADERS } from '@/api/apiConfig';
-import { generateResponse as huggingfaceGenerate } from './huggingfaceService';
+import { sendMessage as gradioSendMessage } from './gradioService';
 
 export const llamaApi = {
   async generateResponse(prompt: string): Promise<string> {
     console.log('Attempting to generate response for:', prompt);
 
     try {
-      console.log('Trying Hugging Face API...');
-      const response = await huggingfaceGenerate(prompt);
+      // Try Gradio first
+      console.log('Trying Gradio API...');
+      const response = await gradioSendMessage(prompt);
       if (response) {
         return response;
       }
     } catch (error) {
-      console.error('Hugging Face API error:', error);
+      console.error('Gradio API error:', error);
     }
 
     // Generate context-aware fallback response
