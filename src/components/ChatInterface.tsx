@@ -17,35 +17,47 @@ export const ChatInterface = () => {
   const { toast } = useToast();
 
   const suggestions = [
-    "Pediatric fever management",
-    "Vaccination schedule",
-    "Growth chart interpretation",
-    "Common allergies",
+    "What are common symptoms of pediatric fever?",
+    "How to handle infant vaccination schedules?",
+    "Signs of respiratory distress in children",
+    "Common childhood allergies and treatments",
   ];
 
   const handleSend = async () => {
-    if (message.trim()) {
-      setIsLoading(true);
-      const userMessage = message.trim();
-      setMessage("");
-      
-      // Add user message to chat
-      setMessages(prev => [...prev, { text: userMessage, isUser: true }]);
+    if (!message.trim()) return;
+    
+    setIsLoading(true);
+    const userMessage = message.trim();
+    setMessage("");
+    
+    // Add user message to chat
+    setMessages(prev => [...prev, { text: userMessage, isUser: true }]);
 
-      try {
-        // Get AI response
-        const response = await sendMessage(userMessage);
-        setMessages(prev => [...prev, { text: response, isUser: false }]);
-      } catch (error) {
-        toast({
-          title: "Error",
-          description: "Failed to get response from AI. Please try again.",
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoading(false);
-      }
+    try {
+      console.log("Sending message to Gradio:", userMessage);
+      const response = await sendMessage(userMessage);
+      
+      setMessages(prev => [...prev, { text: response, isUser: false }]);
+    } catch (error) {
+      console.error("Chat error:", error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to get response. Please try again.",
+        variant: "destructive",
+      });
+      
+      // Add error message to chat
+      setMessages(prev => [...prev, { 
+        text: "I apologize, but I'm having trouble connecting to the medical knowledge base. Please try again in a moment.", 
+        isUser: false 
+      }]);
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    setMessage(suggestion);
   };
 
   return (
@@ -63,7 +75,7 @@ export const ChatInterface = () => {
         </p>
         
         {/* Chat Messages */}
-        <div className="w-full max-w-2xl space-y-4 overflow-y-auto">
+        <div className="w-full max-w-2xl space-y-4 overflow-y-auto px-4">
           {messages.map((msg, index) => (
             <div
               key={index}
@@ -71,7 +83,7 @@ export const ChatInterface = () => {
                 msg.isUser
                   ? "bg-medical-primary text-white ml-auto"
                   : "bg-medical-accent text-medical-primary"
-              } max-w-[80%] ${msg.isUser ? "ml-auto" : "mr-auto"}`}
+              } max-w-[80%] ${msg.isUser ? "ml-auto" : "mr-auto"} shadow-sm`}
             >
               {msg.text}
             </div>
@@ -79,11 +91,11 @@ export const ChatInterface = () => {
         </div>
         
         {/* Suggestions */}
-        <div className="flex flex-wrap justify-center gap-2 max-w-md">
+        <div className="flex flex-wrap justify-center gap-2 max-w-md px-4">
           {suggestions.map((suggestion) => (
             <button
               key={suggestion}
-              onClick={() => setMessage(suggestion)}
+              onClick={() => handleSuggestionClick(suggestion)}
               className="bg-medical-accent text-medical-primary px-4 py-2 rounded-full text-sm hover:bg-medical-secondary hover:text-white transition-colors"
             >
               {suggestion}
@@ -94,7 +106,7 @@ export const ChatInterface = () => {
 
       {/* Input Area */}
       <div className="px-4">
-        <div className="bg-white border border-gray-200 rounded-lg flex items-center gap-2 p-2">
+        <div className="bg-white border border-gray-200 rounded-lg flex items-center gap-2 p-2 shadow-sm">
           <Button variant="ghost" size="icon">
             <Plus className="h-5 w-5 text-gray-500" />
           </Button>
