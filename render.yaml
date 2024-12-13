@@ -2,8 +2,10 @@ services:
   - type: web
     name: nelsonbot
     env: node
-    buildCommand: npm install && npm run build
+    buildCommand: npm ci && npm run build
     startCommand: npm run preview
     envVars:
       - key: PORT
         value: 8080
+      - key: NODE_VERSION
+        value: 18.19.0
