@@ -4,15 +4,14 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { StrictMode } from "react";
 import Index from "./pages/Index";
 import AppSidebar from "./components/AppSidebar";
 import Footer from "./components/Footer";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <StrictMode>
+const App = () => {
+  return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
@@ -32,7 +31,7 @@ const App = () => (
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
-  </StrictMode>
-);
+  );
+};
 
 export default App;
