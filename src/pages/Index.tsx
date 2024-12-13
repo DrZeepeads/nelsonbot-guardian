@@ -3,9 +3,11 @@ import ChatInterface from "@/components/ChatInterface";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-gray-50 pb-16">
+    <div className="min-h-screen bg-gray-50 pb-20">
       <Header />
-      <ChatInterface />
+      <div className="pt-16">
+        <ChatInterface />
+      </div>
     </div>
   );
 };
