@@ -1,6 +1,6 @@
 import { useChat } from "@/hooks/useChat";
 import { useState } from "react";
-import { Send } from "lucide-react";
+import { Send, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import MessageList from "./chat/MessageList";
@@ -25,38 +25,47 @@ export const ChatInterface = () => {
   ];
 
   return (
-    <div className="flex flex-col h-screen pt-16 pb-4">
-      <div className="flex-1 flex flex-col items-center justify-center space-y-6 p-4">
-        <div className="w-full max-w-2xl bg-white rounded-lg">
-          <MessageList messages={messages} />
-          
-          <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t">
-            {!messages.length ? (
-              <SuggestionList 
-                suggestions={suggestions} 
-                onSuggestionClick={sendMessage}
-              />
-            ) : null}
-            
-            <div className="flex items-center gap-2 max-w-2xl mx-auto">
-              <Input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask about pediatric topics..."
-                className="flex-1"
-                onKeyPress={(e) => e.key === "Enter" && handleSend()}
-                disabled={isLoading}
-              />
-              
-              <Button 
-                onClick={handleSend}
-                disabled={!input.trim() || isLoading}
-                className="bg-medical-primary hover:bg-medical-primary/90 text-white rounded-full p-3 h-auto"
-              >
-                <Send className="h-5 w-5" />
-              </Button>
-            </div>
+    <div className="flex flex-col h-[calc(100vh-4rem)]">
+      <div className="flex-1 overflow-y-auto pb-20">
+        <MessageList messages={messages} />
+      </div>
+      
+      <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-4">
+        {!messages.length && (
+          <div className="max-w-2xl mx-auto mb-4">
+            <SuggestionList 
+              suggestions={suggestions} 
+              onSuggestionClick={sendMessage}
+            />
           </div>
+        )}
+        
+        <div className="flex items-center gap-2 max-w-2xl mx-auto">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="shrink-0"
+          >
+            <Plus className="h-5 w-5 text-muted-foreground" />
+          </Button>
+          
+          <Input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Ask about pediatric topics..."
+            className="flex-1 bg-background"
+            onKeyPress={(e) => e.key === "Enter" && handleSend()}
+            disabled={isLoading}
+          />
+          
+          <Button 
+            onClick={handleSend}
+            disabled={!input.trim() || isLoading}
+            className="shrink-0 bg-medical-primary hover:bg-medical-primary/90 text-white"
+            size="icon"
+          >
+            <Send className="h-5 w-5" />
+          </Button>
         </div>
       </div>
     </div>
