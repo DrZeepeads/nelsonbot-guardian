@@ -46,9 +46,9 @@ export default function ChatInterface() {
           <Button 
             variant="ghost" 
             size="icon"
-            className="shrink-0"
+            className="shrink-0 text-gray-400 hover:text-gray-600"
           >
-            <Plus className="h-5 w-5 text-gray-500" />
+            <Plus className="h-5 w-5" />
           </Button>
           
           <Input
