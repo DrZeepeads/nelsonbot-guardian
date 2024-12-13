@@ -21,7 +21,8 @@ export default defineConfig(({ mode }) => ({
             type: 'image/x-icon'
           }
         ]
-      })
+      }
+    })
   ].filter(Boolean),
   resolve: {
     alias: {
