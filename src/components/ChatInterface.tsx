@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import MessageList from "./chat/MessageList";
 import SuggestionList from "./chat/SuggestionList";
 
-export const ChatInterface = () => {
+const ChatInterface = () => {
   const { messages, isLoading, sendMessage } = useChat();
   const [input, setInput] = useState("");
 
