@@ -17,7 +17,7 @@ const App = () => {
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <main className="min-h-screen w-full pb-16">
+            <main className="min-h-screen w-full">
               <Routes>
                 <Route path="/" element={<Index />} />
               </Routes>
