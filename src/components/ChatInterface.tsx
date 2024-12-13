@@ -1,19 +1,47 @@
 import React, { useState } from "react";
 import { useChat } from "@/hooks/useChat";
-import { Send, Plus } from "lucide-react";
+import { Send, Plus, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
 import MessageList from "./chat/MessageList";
 import SuggestionList from "./chat/SuggestionList";
+import { parsePDFContent } from "@/utils/pdfUtils";
 
 export default function ChatInterface() {
   const { messages, isLoading, sendMessage } = useChat();
   const [input, setInput] = useState("");
+  const { toast } = useToast();
 
   const handleSend = () => {
     if (input.trim()) {
       sendMessage(input);
       setInput("");
+    }
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== 'application/pdf') {
+      toast({
+        title: "Invalid file type",
+        description: "Please upload a PDF file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const content = await parsePDFContent(file);
+      sendMessage(`Analyzing PDF content: ${content.substring(0, 500)}...`);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to process PDF file",
+        variant: "destructive",
+      });
     }
   };
 
@@ -45,12 +73,20 @@ export default function ChatInterface() {
       
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 z-50">
         <div className="container mx-auto max-w-2xl flex items-center gap-2">
+          <input
+            type="file"
+            accept=".pdf"
+            id="pdf-upload"
+            className="hidden"
+            onChange={handleFileUpload}
+          />
           <Button 
             variant="ghost" 
             size="icon"
             className="shrink-0 text-gray-400 hover:text-gray-600"
+            onClick={() => document.getElementById('pdf-upload')?.click()}
           >
-            <Plus className="h-5 w-5" />
+            <FileText className="h-5 w-5" />
           </Button>
           
           <Input
