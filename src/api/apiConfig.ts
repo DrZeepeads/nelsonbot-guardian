@@ -1,5 +1,7 @@
 export const API_ENDPOINTS = {
-  baseUrl: '/api'
+  baseUrl: '/api',
+  chat: '/api/chat',
+  pdf: '/api/pdf'
 } as const;
 
 export const API_HEADERS = {
