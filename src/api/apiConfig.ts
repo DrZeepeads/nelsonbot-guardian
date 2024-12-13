@@ -1,4 +1,4 @@
-export const API_BASE_URL = process.env.VITE_API_BASE_URL || 'https://your-heroku-app-name.herokuapp.com/api';
+export const API_BASE_URL = process.env.VITE_API_BASE_URL || 'https://your-render-app-name.onrender.com/api';
 
 export const API_ENDPOINTS = {
   chat: `${API_BASE_URL}/chat`,
