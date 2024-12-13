@@ -1,4 +1,4 @@
-export const API_BASE_URL = process.env.VITE_API_BASE_URL || 'https://api.example.com';
+export const API_BASE_URL = process.env.VITE_API_BASE_URL || 'https://your-vercel-deployment-url.vercel.app/api';
 
 export const API_ENDPOINTS = {
   chat: `${API_BASE_URL}/chat`,
@@ -11,6 +11,6 @@ export const API_HEADERS = {
 };
 
 export const UPLOAD_ENDPOINTS = {
-  pdf: `${API_BASE_URL}/upload/pdf`,
-  txt: `${API_BASE_URL}/upload/txt`,
+  pdf: `${API_BASE_URL}/upload`,
+  txt: `${API_BASE_URL}/upload`,
 };
