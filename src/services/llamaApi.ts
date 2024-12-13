@@ -1,31 +1,16 @@
 import { FALLBACK_ENDPOINTS, API_HEADERS } from '@/api/apiConfig';
+import { sendMessage } from './gradioService';
 
 export const llamaApi = {
   async generateResponse(prompt: string): Promise<string> {
     console.log('Attempting to generate response for:', prompt);
 
-    // Try Hugging Face endpoint
+    // Try Hugging Face endpoint through Gradio
     try {
       console.log('Trying Hugging Face endpoint...');
-      const response = await fetch(FALLBACK_ENDPOINTS.primary, {
-        method: 'POST',
-        headers: API_HEADERS,
-        body: JSON.stringify({
-          inputs: prompt,
-          parameters: {
-            max_new_tokens: 250,
-            temperature: 0.7,
-            top_p: 0.9,
-          }
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Hugging Face response:', data);
-        if (data && data.generated_text) {
-          return data.generated_text;
-        }
+      const response = await sendMessage(prompt);
+      if (response) {
+        return response;
       }
     } catch (error) {
       console.error('Hugging Face API error:', error);

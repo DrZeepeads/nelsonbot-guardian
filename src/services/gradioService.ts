@@ -7,13 +7,16 @@ export const sendMessage = async (message: string): Promise<string> => {
     console.log("Connecting to Gradio with URL:", GRADIO_URL);
     const client = new Client(GRADIO_URL);
     
+    // First load the example to initialize the model
+    await client.predict("/load_example", [0]);
+    
+    // Then send the actual prediction request
     const result = await client.predict("/predict", [
-      message,
+      `('${message}',)`,
     ]);
 
     console.log("Raw Gradio response:", result);
     
-    // Handle different response formats
     if (!result || !result.data) {
       return "I apologize, but I couldn't generate a response. Please try again.";
     }
@@ -28,6 +31,6 @@ export const sendMessage = async (message: string): Promise<string> => {
     return processedResult || "I apologize, but I couldn't process the response. Please try again.";
   } catch (error) {
     console.error("Gradio API error:", error);
-    return "I encountered an error processing your request. Please try again later.";
+    throw error; // Let the llamaApi handle the fallback
   }
 };
