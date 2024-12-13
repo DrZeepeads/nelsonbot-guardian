@@ -3,7 +3,7 @@ import { Button } from "./ui/button";
 
 export const Footer = () => {
   return (
-    <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-2 px-4 z-50 shadow-md">
+    <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-2 px-4 z-[100]">
       <div className="flex items-center justify-between max-w-7xl mx-auto">
         <p className="text-sm text-gray-600 truncate">
           Powered by Nelson Textbook of Pediatrics
