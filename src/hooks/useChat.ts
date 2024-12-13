@@ -1,7 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { llamaApi } from '@/services/llamaApi';
-import { sendMessage } from '@/services/gradioService';
 
 interface Message {
   text: string;
@@ -20,13 +19,9 @@ export const useChat = () => {
     setMessages(prev => [...prev, { text: message, isUser: true }]);
 
     try {
-      let response: string;
-      try {
-        response = await sendMessage(message);
-      } catch (error) {
-        console.log('Falling back to LlamaAPI');
-        response = await llamaApi.generateResponse(message);
-      }
+      console.log('Sending message:', message);
+      const response = await llamaApi.generateResponse(message);
+      console.log('Received response:', response);
 
       setMessages(prev => [...prev, { text: response, isUser: false }]);
     } catch (error) {

@@ -1,4 +1,4 @@
-import { API_BASE_URL, API_HEADERS, API_ENDPOINTS } from '@/api/apiConfig';
+import { API_HEADERS, FALLBACK_ENDPOINTS } from '@/api/apiConfig';
 
 const MOCK_RESPONSES = {
   default: "I'm here to help with pediatric questions. What would you like to know?",
@@ -9,42 +9,48 @@ const MOCK_RESPONSES = {
 
 export const llamaApi = {
   async generateResponse(prompt: string): Promise<string> {
+    console.log('Attempting to generate response for:', prompt);
+
+    // Try primary endpoint (Hugging Face)
     try {
-      // First try the Gradio API
-      const gradioResponse = await fetch('https://huggingface.co/spaces/Drzee1994/meta-llama-Llama-3.2-1B/predict', {
+      console.log('Trying primary endpoint...');
+      const primaryResponse = await fetch(FALLBACK_ENDPOINTS.primary, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: API_HEADERS,
+        body: JSON.stringify({ inputs: prompt }),
+      });
+
+      if (primaryResponse.ok) {
+        const data = await primaryResponse.json();
+        console.log('Primary endpoint response:', data);
+        return data.generated_text || MOCK_RESPONSES.default;
+      }
+      console.log('Primary endpoint failed, trying secondary...');
+    } catch (error) {
+      console.log('Primary endpoint error:', error);
+    }
+
+    // Try secondary endpoint (NelsonBot API)
+    try {
+      console.log('Trying secondary endpoint...');
+      const secondaryResponse = await fetch(FALLBACK_ENDPOINTS.secondary, {
+        method: 'POST',
+        headers: API_HEADERS,
         body: JSON.stringify({ prompt }),
       });
 
-      if (gradioResponse.ok) {
-        const data = await gradioResponse.json();
-        return data.response || this.getFallbackResponse(prompt);
+      if (secondaryResponse.ok) {
+        const data = await secondaryResponse.json();
+        console.log('Secondary endpoint response:', data);
+        return data.response || MOCK_RESPONSES.default;
       }
-
-      // If Gradio fails, try the backup API
-      const backupResponse = await fetch('https://api.nelsonbot.com/llama', {
-        method: 'POST',
-        headers: API_HEADERS,
-        body: JSON.stringify({ prompt })
-      });
-
-      if (backupResponse.ok) {
-        const data = await backupResponse.json();
-        return data.response || this.getFallbackResponse(prompt);
-      }
-
-      console.log('Both APIs failed, using fallback response');
-      return this.getFallbackResponse(prompt);
+      console.log('Secondary endpoint failed, using fallback...');
     } catch (error) {
-      console.error('API Error:', error);
-      return MOCK_RESPONSES.connection;
+      console.log('Secondary endpoint error:', error);
     }
-  },
 
-  getFallbackResponse(prompt: string): string {
+    // Fallback response based on prompt content
+    console.log('Using fallback response');
     const lowerPrompt = prompt.toLowerCase();
     
     if (lowerPrompt.includes('pediatric') || lowerPrompt.includes('child') || lowerPrompt.includes('baby')) {
