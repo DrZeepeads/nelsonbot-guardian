@@ -1,9 +1,10 @@
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.nelsonbot.com';
 
 export const API_ENDPOINTS = {
   chat: '/api/chat',
   resources: '/api/resources',
-  settings: '/api/settings'
+  settings: '/api/settings',
+  llama: '/api/llama'
 } as const;
 
 export const API_HEADERS = {
