@@ -1,25 +1,14 @@
-import { API_HEADERS } from '@/api/apiConfig';
 import { sendMessage as gradioSendMessage } from './gradioService';
 
 export const llamaApi = {
   async generateResponse(prompt: string): Promise<string> {
-    console.log('Attempting to generate response for:', prompt);
-
     try {
-      // Try Gradio first
-      console.log('Trying Gradio API...');
+      console.log('Attempting to generate response for:', prompt);
       const response = await gradioSendMessage(prompt);
-      console.log('Gradio response:', response);
-      if (response) {
-        return response;
-      }
+      return response;
     } catch (error) {
-      console.error('Gradio API error:', error);
-      // Fall through to fallback response
+      console.error('LlamaAPI Error:', error);
+      return "I apologize, but I'm having trouble connecting to the server. For pediatric questions, please try again in a moment or consult with a healthcare provider for immediate concerns.";
     }
-
-    // If Gradio fails, return a context-aware fallback response
-    console.log('Using offline fallback response');
-    return "I apologize, but I'm having trouble connecting to the server. For pediatric questions, please try again in a moment or consult with a healthcare provider for immediate concerns.";
   }
 };
