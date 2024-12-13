@@ -6,10 +6,7 @@ export const generateResponse = async (message: string): Promise<string> => {
     
     const response = await fetch(API_ENDPOINTS.huggingface, {
       method: 'POST',
-      headers: {
-        ...API_HEADERS,
-        'Authorization': `Bearer ${import.meta.env.VITE_HUGGINGFACE_API_KEY}`
-      },
+      headers: API_HEADERS,
       body: JSON.stringify({
         inputs: message,
         parameters: {
@@ -22,16 +19,20 @@ export const generateResponse = async (message: string): Promise<string> => {
     });
 
     if (!response.ok) {
+      console.error(`HTTP error! status: ${response.status}`);
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const data = await response.json();
     console.log("Hugging Face API response:", data);
 
+    // Handle different response formats
     if (Array.isArray(data) && data[0]?.generated_text) {
       return data[0].generated_text;
     } else if (data?.generated_text) {
       return data.generated_text;
+    } else if (typeof data === 'string') {
+      return data;
     }
 
     throw new Error('Invalid response format from Hugging Face API');
