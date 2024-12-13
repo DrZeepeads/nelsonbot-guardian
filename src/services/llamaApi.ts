@@ -6,7 +6,13 @@ export const llamaApi = {
       // If PDF content is provided, use it for context-aware responses
       if (pdfContent) {
         const searchResult = await pdfService.searchPdfContent(message, pdfContent);
-        return searchResult.response || "I couldn't find relevant information in the PDF.";
+        
+        if (searchResult.found) {
+          return `Based on the PDF content: ${searchResult.response}`;
+        } else {
+          return "I couldn't find relevant information in the PDF. Here's a general response: " +
+                 "I'm here to help with pediatric questions. You can also upload a PDF for more specific information.";
+        }
       }
 
       // Default response generation

@@ -1,6 +1,24 @@
 import { API_ENDPOINTS, API_HEADERS } from '@/api/apiConfig';
 
 export const pdfService = {
+  async checkStatus() {
+    try {
+      const response = await fetch(API_ENDPOINTS.status, {
+        method: 'GET',
+        headers: API_HEADERS
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to check PDF service status');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('PDF status check error:', error);
+      throw error;
+    }
+  },
+
   async analyzePdfContent(content: string) {
     try {
       const response = await fetch(API_ENDPOINTS.pdf, {

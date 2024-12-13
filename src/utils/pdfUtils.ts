@@ -28,3 +28,13 @@ export const parsePDFContent = async (file: File): Promise<string> => {
 export const searchInPdfContent = (content: string, query: string): boolean => {
   return content.toLowerCase().includes(query.toLowerCase());
 };
+
+export const testPdfService = async () => {
+  try {
+    const response = await fetch('/api/status');
+    return await response.json();
+  } catch (error) {
+    console.error('Error testing PDF service:', error);
+    throw error;
+  }
+};
