@@ -15,4 +15,4 @@ export const API_HEADERS = {
 export const FALLBACK_ENDPOINTS = {
   primary: 'https://huggingface.co/spaces/Drzee1994/meta-llama-Llama-3.2-1B/predict',
   secondary: 'https://api.nelsonbot.com/llama'
-};
+} as const;
