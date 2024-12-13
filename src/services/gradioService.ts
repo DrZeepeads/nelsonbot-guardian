@@ -5,15 +5,17 @@ const GRADIO_URL = import.meta.env.VITE_GRADIO_URL || "https://huggingface.co/sp
 export const sendMessage = async (message: string): Promise<string> => {
   try {
     console.log("Connecting to Gradio with URL:", GRADIO_URL);
-    const client = new Client(GRADIO_URL);
+    const client = await Client.connect(GRADIO_URL);
     
     // First load the example to initialize the model
-    await client.predict("/load_example", [0]);
+    await client.predict("/load_example", {
+      example_tuple: 0,
+    });
     
     // Then send the actual prediction request
-    const result = await client.predict("/predict", [
-      `('${message}',)`,
-    ]);
+    const result = await client.predict("/predict", {
+      param_0: `('${message}',)`,
+    });
 
     console.log("Raw Gradio response:", result);
     
