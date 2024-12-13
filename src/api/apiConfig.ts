@@ -13,8 +13,8 @@ export const API_HEADERS = {
   'Authorization': `Bearer ${import.meta.env.HUGGINGFACE_API_KEY}`
 };
 
-// Remove localhost references
-export const FALLBACK_ENDPOINTS = {
-  primary: `${API_BASE_URL}/chat`,
-  secondary: `${API_BASE_URL}/llama`
+// Remove all localhost references and use Hugging Face endpoints
+export const ENDPOINTS = {
+  primary: API_ENDPOINTS.huggingface,
+  secondary: `${API_ENDPOINTS.huggingface}/chat`
 } as const;

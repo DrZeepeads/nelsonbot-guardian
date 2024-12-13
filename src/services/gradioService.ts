@@ -6,9 +6,7 @@ export const sendMessage = async (message: string): Promise<string> => {
     console.log("Connecting to Gradio with URL:", API_ENDPOINTS.huggingface);
     const client = await Client.connect(API_ENDPOINTS.huggingface);
     
-    const result = await client.predict("/chat", [
-      message,  // Input message
-    ]);
+    const result = await client.predict(0, [message]);
 
     console.log("Raw Gradio response:", result);
     
