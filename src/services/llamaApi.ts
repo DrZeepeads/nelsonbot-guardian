@@ -1,5 +1,3 @@
-import { pdfService } from './pdfService';
-
 export const llamaApi = {
   async generateResponse(message: string, pdfContent?: string) {
     try {
