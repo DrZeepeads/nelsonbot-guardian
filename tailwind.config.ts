@@ -19,43 +19,54 @@ export default {
     },
     extend: {
       colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
-        medical: {
-          primary: "#60A5FA", // Swapped with secondary
-          secondary: "#006B5F", // Swapped with primary
-          accent: "#1A1F2C", // Darkened accent
-        },
+        // Brand Colors
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: "#2D9CDB",
+          dark: "#1B6CA8",
+          light: "#56CCF2",
+          foreground: "#FFFFFF",
         },
-        secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
+        // Neutral Colors
+        background: "#F9FAFB",
+        surface: "#FFFFFF",
+        text: {
+          primary: "#111827",
+          secondary: "#6B7280",
         },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
-        },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
-        },
+        border: "#E5E7EB",
+        // Secondary/Accent Colors
         accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
+          DEFAULT: "#F2994A",
+          hover: "#D97706",
+          light: "#FFE5D9",
+          foreground: "#FFFFFF",
         },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
+        // Feedback Colors
+        success: {
+          DEFAULT: "#27AE60",
+          foreground: "#FFFFFF",
         },
-        card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
+        warning: {
+          DEFAULT: "#F2C94C",
+          foreground: "#111827",
+        },
+        error: {
+          DEFAULT: "#EB5757",
+          foreground: "#FFFFFF",
+        },
+        info: {
+          DEFAULT: "#56CCF2",
+          foreground: "#FFFFFF",
+        },
+        // Dark Mode Colors
+        dark: {
+          background: "#1F2937",
+          surface: "#374151",
+          text: {
+            primary: "#F9FAFB",
+            secondary: "#9CA3AF",
+          },
+          border: "#4B5563",
         },
       },
       fontFamily: {
