@@ -25,12 +25,12 @@ const ChatInterface = () => {
   ];
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)]">
-      <div className="flex-1 overflow-y-auto pb-20">
+    <div className="flex flex-col h-[calc(100vh-4rem)] pt-16">
+      <div className="flex-1 overflow-y-auto pb-32">
         <MessageList messages={messages} />
       </div>
       
-      <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-4">
+      <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-4 z-40">
         {!messages.length && (
           <div className="max-w-2xl mx-auto mb-4">
             <SuggestionList 
