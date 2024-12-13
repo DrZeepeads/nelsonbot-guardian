@@ -25,3 +25,9 @@ export const THEME = {
     accent: '#E0F2FE'
   }
 } as const;
+
+export const API_ENDPOINTS = {
+  CHAT: '/api/chat',
+  AUTH: '/api/auth',
+  RESOURCES: '/api/resources'
+} as const;

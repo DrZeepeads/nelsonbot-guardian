@@ -1,20 +1,10 @@
-import { useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
-import { sendMessage } from "@/services/gradioService";
+import { useChat } from "@/hooks/useChat";
 import MessageList from "./chat/MessageList";
 import SuggestionList from "./chat/SuggestionList";
 import ChatInput from "./chat/ChatInput";
 
-interface ChatMessage {
-  text: string;
-  isUser: boolean;
-}
-
 export const ChatInterface = () => {
-  const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
+  const { messages, isLoading, sendMessage } = useChat();
 
   const suggestions = [
     "What are common symptoms of pediatric fever?",
@@ -23,35 +13,9 @@ export const ChatInterface = () => {
     "Common childhood allergies and treatments",
   ];
 
-  const handleSend = async () => {
+  const handleSend = async (message: string) => {
     if (!message.trim()) return;
-    
-    setIsLoading(true);
-    const userMessage = message.trim();
-    setMessage("");
-    
-    setMessages(prev => [...prev, { text: userMessage, isUser: true }]);
-
-    try {
-      console.log("Sending message to Gradio:", userMessage);
-      const response = await sendMessage(userMessage);
-      
-      setMessages(prev => [...prev, { text: response, isUser: false }]);
-    } catch (error) {
-      console.error("Chat error:", error);
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to get response. Please try again.",
-        variant: "destructive",
-      });
-      
-      setMessages(prev => [...prev, { 
-        text: "I apologize, but I'm having trouble connecting to the medical knowledge base. Please try again in a moment.", 
-        isUser: false 
-      }]);
-    } finally {
-      setIsLoading(false);
-    }
+    await sendMessage(message);
   };
 
   return (
@@ -73,14 +37,12 @@ export const ChatInterface = () => {
         
         <SuggestionList 
           suggestions={suggestions} 
-          onSuggestionClick={setMessage} 
+          onSuggestionClick={handleSend} 
         />
       </div>
 
       <ChatInput
-        message={message}
         isLoading={isLoading}
-        onMessageChange={setMessage}
         onSend={handleSend}
       />
     </div>
