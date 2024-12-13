@@ -1,15 +1,22 @@
+import { useState } from "react";
 import { Mic, Send, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 interface ChatInputProps {
-  message: string;
   isLoading: boolean;
-  onMessageChange: (value: string) => void;
-  onSend: () => void;
+  onSend: (message: string) => void;
 }
 
-export const ChatInput = ({ message, isLoading, onMessageChange, onSend }: ChatInputProps) => {
+export const ChatInput = ({ isLoading, onSend }: ChatInputProps) => {
+  const [message, setMessage] = useState("");
+
+  const handleSend = () => {
+    if (!message.trim()) return;
+    onSend(message);
+    setMessage(""); // Clear input after sending
+  };
+
   return (
     <div className="px-4">
       <div className="bg-white border border-gray-200 rounded-lg flex items-center gap-2 p-2 shadow-sm">
@@ -19,10 +26,10 @@ export const ChatInput = ({ message, isLoading, onMessageChange, onSend }: ChatI
         
         <Input
           value={message}
-          onChange={(e) => onMessageChange(e.target.value)}
+          onChange={(e) => setMessage(e.target.value)}
           placeholder="Type your medical query..."
           className="flex-1 border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-          onKeyPress={(e) => e.key === "Enter" && onSend()}
+          onKeyPress={(e) => e.key === "Enter" && handleSend()}
           disabled={isLoading}
         />
         
@@ -31,7 +38,7 @@ export const ChatInput = ({ message, isLoading, onMessageChange, onSend }: ChatI
         </Button>
         
         <Button 
-          onClick={onSend}
+          onClick={handleSend}
           disabled={!message.trim() || isLoading}
           className="bg-medical-primary hover:bg-medical-primary/90"
         >

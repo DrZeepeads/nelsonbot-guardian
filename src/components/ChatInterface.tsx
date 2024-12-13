@@ -13,11 +13,6 @@ export const ChatInterface = () => {
     "Common childhood allergies and treatments",
   ];
 
-  const handleSend = async (message: string) => {
-    if (!message.trim()) return;
-    await sendMessage(message);
-  };
-
   return (
     <div className="flex flex-col h-screen pt-16 pb-4">
       <div className="flex-1 flex flex-col items-center justify-center space-y-6 p-4">
@@ -37,13 +32,13 @@ export const ChatInterface = () => {
         
         <SuggestionList 
           suggestions={suggestions} 
-          onSuggestionClick={handleSend} 
+          onSuggestionClick={sendMessage} 
         />
       </div>
 
       <ChatInput
         isLoading={isLoading}
-        onSend={handleSend}
+        onSend={sendMessage}
       />
     </div>
   );
