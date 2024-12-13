@@ -7,6 +7,7 @@ import { useToast } from "@/components/ui/use-toast";
 import MessageList from "./chat/MessageList";
 import SuggestionList from "./chat/SuggestionList";
 import { parsePDFContent } from "@/utils/pdfUtils";
+import { pdfService } from "@/services/pdfService";
 
 export default function ChatInterface() {
   const { messages, isLoading, sendMessage } = useChat();
@@ -24,22 +25,36 @@ export default function ChatInterface() {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    if (file.type !== 'application/pdf') {
+    const validTypes = ['application/pdf', 'text/plain'];
+    if (!validTypes.includes(file.type)) {
       toast({
         title: "Invalid file type",
-        description: "Please upload a PDF file",
+        description: "Please upload a PDF or TXT file",
         variant: "destructive",
       });
       return;
     }
 
     try {
-      const content = await parsePDFContent(file);
-      sendMessage(`Analyzing PDF content: ${content.substring(0, 500)}...`);
+      // First upload the file to Vercel
+      await pdfService.uploadFile(file);
+      toast({
+        title: "Success",
+        description: "File uploaded successfully",
+      });
+
+      // Then process the content
+      if (file.type === 'application/pdf') {
+        const content = await parsePDFContent(file);
+        sendMessage(`Analyzing PDF content: ${content.substring(0, 500)}...`);
+      } else {
+        const content = await file.text();
+        sendMessage(`Analyzing text content: ${content.substring(0, 500)}...`);
+      }
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to process PDF file",
+        description: "Failed to process file",
         variant: "destructive",
       });
     }
@@ -75,7 +90,7 @@ export default function ChatInterface() {
         <div className="container mx-auto max-w-2xl flex items-center gap-2">
           <input
             type="file"
-            accept=".pdf"
+            accept=".pdf,.txt"
             id="pdf-upload"
             className="hidden"
             onChange={handleFileUpload}

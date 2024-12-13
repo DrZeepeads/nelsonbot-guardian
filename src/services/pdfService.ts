@@ -19,6 +19,27 @@ export const pdfService = {
     }
   },
 
+  async uploadFile(file: File) {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch(API_ENDPOINTS.pdf + '/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload file');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('File upload error:', error);
+      throw error;
+    }
+  },
+
   async analyzePdfContent(content: string) {
     try {
       const response = await fetch(API_ENDPOINTS.pdf, {
