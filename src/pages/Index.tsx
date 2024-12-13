@@ -1,6 +1,7 @@
 import React from "react";
 import MobileMenuBar from "@/components/MobileMenuBar";
 import ChatInterface from "@/components/ChatInterface";
+import BottomMenu from "@/components/BottomMenu";
 
 export default function Index() {
   return (
@@ -20,6 +21,7 @@ export default function Index() {
         </div>
         <ChatInterface />
       </main>
+      <BottomMenu />
     </div>
   );
 }
