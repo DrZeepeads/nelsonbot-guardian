@@ -19,28 +19,15 @@ export const useChat = () => {
     setMessages(prev => [...prev, { text: message, isUser: true }]);
 
     try {
-      console.log('Sending message:', message);
       const response = await llamaApi.generateResponse(message);
-      console.log('Received response:', response);
-
-      if (response) {
-        setMessages(prev => [...prev, { text: response, isUser: false }]);
-      } else {
-        throw new Error('Empty response received');
-      }
+      setMessages(prev => [...prev, { text: response, isUser: false }]);
     } catch (error) {
       console.error('Chat error:', error);
       toast({
-        title: "Connection Issue",
-        description: "Having trouble connecting to the chat service. Using fallback responses.",
+        title: "Error",
+        description: "Unable to process your request. Please try again.",
         variant: "destructive",
       });
-      
-      // Add a fallback response even when there's an error
-      setMessages(prev => [...prev, { 
-        text: "I apologize, but I'm having trouble connecting right now. I'll provide general pediatric information based on my knowledge base.",
-        isUser: false 
-      }]);
     } finally {
       setIsLoading(false);
     }
