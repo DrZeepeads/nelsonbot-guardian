@@ -1,8 +1,9 @@
 import { API_BASE_URL, API_HEADERS, API_ENDPOINTS } from '@/api/apiConfig';
 
 const MOCK_RESPONSES = {
-  default: "I apologize, but I'm currently experiencing connection issues. Please try again later or contact support if the issue persists.",
-  pediatric: "Based on pediatric guidelines, it's recommended to consult with your healthcare provider for personalized medical advice."
+  default: "I'm here to help with pediatric questions. What would you like to know?",
+  error: "I apologize, but I'm having trouble connecting right now. Please try asking your question again.",
+  pediatric: "Based on pediatric guidelines, it's recommended to consult with your healthcare provider for specific medical advice."
 };
 
 export const llamaApi = {
@@ -15,17 +16,25 @@ export const llamaApi = {
       });
 
       if (!response.ok) {
-        // Return a mock response based on the query type
-        return prompt.toLowerCase().includes('pediatric') 
-          ? MOCK_RESPONSES.pediatric 
-          : MOCK_RESPONSES.default;
+        console.log('LlamaAPI response not ok, using fallback');
+        return this.getFallbackResponse(prompt);
       }
 
       const data = await response.json();
-      return data.response;
+      return data.response || this.getFallbackResponse(prompt);
     } catch (error) {
       console.error('LlamaAPI Error:', error);
-      return MOCK_RESPONSES.default;
+      return this.getFallbackResponse(prompt);
     }
+  },
+
+  getFallbackResponse(prompt: string): string {
+    const lowerPrompt = prompt.toLowerCase();
+    
+    if (lowerPrompt.includes('pediatric') || lowerPrompt.includes('child') || lowerPrompt.includes('baby')) {
+      return MOCK_RESPONSES.pediatric;
+    }
+    
+    return MOCK_RESPONSES.default;
   }
 };

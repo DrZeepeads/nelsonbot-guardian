@@ -31,9 +31,6 @@ export const useChat = () => {
       setMessages(prev => [...prev, { text: response, isUser: false }]);
     } catch (error) {
       console.error('Chat error:', error);
-      const fallbackResponse = "I apologize, but I'm having trouble connecting right now. Please try again in a moment.";
-      setMessages(prev => [...prev, { text: fallbackResponse, isUser: false }]);
-      
       toast({
         title: "Connection Issue",
         description: "Having trouble connecting to the chat service. Please try again later.",
