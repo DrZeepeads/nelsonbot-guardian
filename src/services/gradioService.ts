@@ -7,14 +7,9 @@ export const sendMessage = async (message: string): Promise<string> => {
     console.log("Connecting to Gradio with URL:", GRADIO_URL);
     const client = await Client.connect(GRADIO_URL);
     
-    // First load the example to initialize the model
-    await client.predict("/load_example", {
-      example_tuple: 0,
-    });
-    
-    // Then send the actual prediction request
-    const result = await client.predict("/predict", {
-      param_0: `('${message}',)`,
+    // Send the prediction request directly with the message
+    const result = await client.predict("/predict", { 
+      param_0: message,
     });
 
     console.log("Raw Gradio response:", result);
