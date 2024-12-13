@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { llamaApi } from '@/services/llamaApi';
 
 interface Message {
@@ -23,14 +23,24 @@ export const useChat = () => {
       const response = await llamaApi.generateResponse(message);
       console.log('Received response:', response);
 
-      setMessages(prev => [...prev, { text: response, isUser: false }]);
+      if (response) {
+        setMessages(prev => [...prev, { text: response, isUser: false }]);
+      } else {
+        throw new Error('Empty response received');
+      }
     } catch (error) {
       console.error('Chat error:', error);
       toast({
         title: "Connection Issue",
-        description: "Having trouble connecting to the chat service. Please try again later.",
+        description: "Having trouble connecting to the chat service. Using fallback responses.",
         variant: "destructive",
       });
+      
+      // Add a fallback response even when there's an error
+      setMessages(prev => [...prev, { 
+        text: "I apologize, but I'm having trouble connecting right now. I'll provide general pediatric information based on my knowledge base.",
+        isUser: false 
+      }]);
     } finally {
       setIsLoading(false);
     }

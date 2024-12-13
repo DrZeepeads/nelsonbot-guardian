@@ -3,57 +3,74 @@ import { API_HEADERS, FALLBACK_ENDPOINTS } from '@/api/apiConfig';
 const MOCK_RESPONSES = {
   default: "I'm here to help with pediatric questions. What would you like to know?",
   error: "I apologize, but I'm having trouble connecting right now. Please try asking your question again.",
-  pediatric: "Based on pediatric guidelines, it's recommended to consult with your healthcare provider for specific medical advice.",
-  connection: "I'm currently experiencing connection issues, but I can still assist you with general pediatric information."
+  pediatric: "Based on pediatric guidelines, I can provide general information about children's health. However, for specific medical advice, please consult with your healthcare provider.",
+  connection: "I'm currently experiencing connection issues. Here's what I know about your query based on general pediatric knowledge: ",
 };
 
 export const llamaApi = {
   async generateResponse(prompt: string): Promise<string> {
     console.log('Attempting to generate response for:', prompt);
 
-    // Try primary endpoint (Hugging Face)
+    // Try Hugging Face endpoint
     try {
-      console.log('Trying primary endpoint...');
-      const primaryResponse = await fetch(FALLBACK_ENDPOINTS.primary, {
+      console.log('Trying Hugging Face endpoint...');
+      const response = await fetch(FALLBACK_ENDPOINTS.primary, {
         method: 'POST',
-        headers: API_HEADERS,
-        body: JSON.stringify({ inputs: prompt }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          inputs: prompt,
+          parameters: {
+            max_new_tokens: 250,
+            temperature: 0.7,
+            top_p: 0.9,
+          }
+        }),
       });
 
-      if (primaryResponse.ok) {
-        const data = await primaryResponse.json();
-        console.log('Primary endpoint response:', data);
-        return data.generated_text || MOCK_RESPONSES.default;
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Hugging Face response:', data);
+        if (data && data.generated_text) {
+          return data.generated_text;
+        }
       }
-      console.log('Primary endpoint failed, trying secondary...');
     } catch (error) {
-      console.log('Primary endpoint error:', error);
+      console.error('Hugging Face API error:', error);
     }
 
-    // Try secondary endpoint (NelsonBot API)
+    // Try Nelson API endpoint
     try {
-      console.log('Trying secondary endpoint...');
-      const secondaryResponse = await fetch(FALLBACK_ENDPOINTS.secondary, {
+      console.log('Trying Nelson API endpoint...');
+      const response = await fetch(FALLBACK_ENDPOINTS.secondary, {
         method: 'POST',
         headers: API_HEADERS,
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ 
+          prompt,
+          max_tokens: 250,
+        }),
       });
 
-      if (secondaryResponse.ok) {
-        const data = await secondaryResponse.json();
-        console.log('Secondary endpoint response:', data);
-        return data.response || MOCK_RESPONSES.default;
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Nelson API response:', data);
+        if (data && data.response) {
+          return data.response;
+        }
       }
-      console.log('Secondary endpoint failed, using fallback...');
     } catch (error) {
-      console.log('Secondary endpoint error:', error);
+      console.error('Nelson API error:', error);
     }
 
-    // Fallback response based on prompt content
-    console.log('Using fallback response');
+    // If both APIs fail, provide a context-aware fallback response
+    console.log('Both APIs failed, using fallback response');
     const lowerPrompt = prompt.toLowerCase();
     
-    if (lowerPrompt.includes('pediatric') || lowerPrompt.includes('child') || lowerPrompt.includes('baby')) {
+    if (lowerPrompt.includes('pediatric') || 
+        lowerPrompt.includes('child') || 
+        lowerPrompt.includes('baby') ||
+        lowerPrompt.includes('infant')) {
       return MOCK_RESPONSES.pediatric;
     }
     
