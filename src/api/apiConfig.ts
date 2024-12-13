@@ -4,7 +4,7 @@ export const API_ENDPOINTS = {
   chat: '/api/chat',
   resources: '/api/resources',
   settings: '/api/settings',
-  llama: '/api/llama'
+  huggingface: 'https://api-inference.huggingface.co/models/meta-llama/Llama-3.2-1B'
 } as const;
 
 export const API_HEADERS = {
@@ -13,6 +13,6 @@ export const API_HEADERS = {
 };
 
 export const FALLBACK_ENDPOINTS = {
-  primary: 'https://huggingface.co/spaces/Drzee1994/meta-llama-Llama-3.2-1B/predict',
+  primary: API_ENDPOINTS.huggingface,
   secondary: 'https://api.nelsonbot.com/llama'
 } as const;

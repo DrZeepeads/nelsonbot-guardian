@@ -1,14 +1,14 @@
 import { FALLBACK_ENDPOINTS, API_HEADERS } from '@/api/apiConfig';
-import { sendMessage } from './gradioService';
+import { generateResponse as huggingfaceGenerate } from './huggingfaceService';
 
 export const llamaApi = {
   async generateResponse(prompt: string): Promise<string> {
     console.log('Attempting to generate response for:', prompt);
 
-    // Try Hugging Face endpoint through Gradio
+    // Try Hugging Face API first
     try {
-      console.log('Trying Hugging Face endpoint...');
-      const response = await sendMessage(prompt);
+      console.log('Trying Hugging Face API...');
+      const response = await huggingfaceGenerate(prompt);
       if (response) {
         return response;
       }
@@ -16,7 +16,7 @@ export const llamaApi = {
       console.error('Hugging Face API error:', error);
     }
 
-    // Try Nelson API endpoint
+    // Try Nelson API as fallback
     try {
       console.log('Trying Nelson API endpoint...');
       const response = await fetch(FALLBACK_ENDPOINTS.secondary, {
@@ -39,7 +39,7 @@ export const llamaApi = {
       console.error('Nelson API error:', error);
     }
 
-    // If both APIs fail, provide a context-aware fallback response
+    // Context-aware fallback response
     console.log('Both APIs failed, using fallback response');
     const lowerPrompt = prompt.toLowerCase();
     
