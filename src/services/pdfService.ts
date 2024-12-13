@@ -1,4 +1,4 @@
-import { API_ENDPOINTS, API_HEADERS } from '@/api/apiConfig';
+import { API_ENDPOINTS, API_HEADERS, UPLOAD_ENDPOINTS } from '@/api/apiConfig';
 
 export const pdfService = {
   async checkStatus() {
@@ -24,13 +24,17 @@ export const pdfService = {
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await fetch(API_ENDPOINTS.pdf + '/upload', {
+      const endpoint = file.type === 'application/pdf' 
+        ? UPLOAD_ENDPOINTS.pdf 
+        : UPLOAD_ENDPOINTS.txt;
+
+      const response = await fetch(endpoint, {
         method: 'POST',
         body: formData,
       });
 
       if (!response.ok) {
-        throw new Error('Failed to upload file');
+        throw new Error(`Failed to upload ${file.type} file`);
       }
 
       return await response.json();
