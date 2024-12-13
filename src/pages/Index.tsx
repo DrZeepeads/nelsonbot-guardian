@@ -1,7 +1,8 @@
+import React from "react";
 import MobileMenuBar from "@/components/MobileMenuBar";
 import ChatInterface from "@/components/ChatInterface";
 
-const Index = () => {
+function Index() {
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       <MobileMenuBar />
@@ -10,6 +11,6 @@ const Index = () => {
       </div>
     </div>
   );
-};
+}
 
 export default Index;

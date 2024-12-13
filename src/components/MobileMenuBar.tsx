@@ -31,7 +31,7 @@ const menuItems = [
   },
 ];
 
-const MobileMenuBar: React.FC = () => {
+function MobileMenuBar() {
   const [isMenuOpen, setMenuOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -80,6 +80,6 @@ const MobileMenuBar: React.FC = () => {
       </nav>
     </header>
   );
-};
+}
 
 export default MobileMenuBar;
