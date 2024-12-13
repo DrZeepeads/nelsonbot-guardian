@@ -12,7 +12,8 @@ export const API_HEADERS = {
   'Accept': 'application/json'
 };
 
+// Updated fallback endpoints to use HTTPS
 export const FALLBACK_ENDPOINTS = {
-  primary: API_ENDPOINTS.huggingface,
+  primary: 'https://api.nelsonbot.com/chat',
   secondary: 'https://api.nelsonbot.com/llama'
 } as const;

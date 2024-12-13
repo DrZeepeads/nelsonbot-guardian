@@ -16,10 +16,10 @@ export const llamaApi = {
       console.error('Hugging Face API error:', error);
     }
 
-    // Try Nelson API as fallback
+    // Try primary fallback
     try {
-      console.log('Trying Nelson API endpoint...');
-      const response = await fetch(FALLBACK_ENDPOINTS.secondary, {
+      console.log('Trying primary fallback endpoint...');
+      const response = await fetch(FALLBACK_ENDPOINTS.primary, {
         method: 'POST',
         headers: API_HEADERS,
         body: JSON.stringify({ 
@@ -30,26 +30,26 @@ export const llamaApi = {
 
       if (response.ok) {
         const data = await response.json();
-        console.log('Nelson API response:', data);
+        console.log('Primary fallback response:', data);
         if (data && data.response) {
           return data.response;
         }
       }
     } catch (error) {
-      console.error('Nelson API error:', error);
+      console.error('Primary fallback error:', error);
     }
 
-    // Context-aware fallback response
-    console.log('Both APIs failed, using fallback response');
+    // Generate offline fallback response based on context
+    console.log('Using offline fallback response');
     const lowerPrompt = prompt.toLowerCase();
     
     if (lowerPrompt.includes('pediatric') || 
         lowerPrompt.includes('child') || 
         lowerPrompt.includes('baby') ||
         lowerPrompt.includes('infant')) {
-      return "Based on pediatric guidelines, I can provide general information about children's health. However, for specific medical advice, please consult with your healthcare provider.";
+      return "I'm currently operating in offline mode. For pediatric questions, please consult with a healthcare provider. The Nelson Textbook of Pediatrics recommends seeking immediate medical attention for any concerning symptoms in children.";
     }
     
-    return "I'm here to help with pediatric questions. What would you like to know?";
+    return "I'm currently in offline mode but I can provide general pediatric information based on the Nelson Textbook of Pediatrics. How can I assist you?";
   }
 };
