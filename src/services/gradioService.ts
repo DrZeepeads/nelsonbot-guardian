@@ -7,14 +7,19 @@ export const sendMessage = async (message: string): Promise<string> => {
     const client = new Client(GRADIO_URL);
     console.log("Connecting to Gradio with URL:", GRADIO_URL);
     
-    const result = await client.predict(message, {
+    const result: unknown = await client.predict(message, {
       apiName: "/predict"
     });
     
-    console.log("Gradio response:", result);
-    return result.toString();
+    // Robust type checking and fallback
+    const processedResult = result !== null && result !== undefined 
+      ? String(result).trim() 
+      : "I'm sorry, but I couldn't generate a response. Please try again.";
+    
+    console.log("Gradio response:", processedResult);
+    return processedResult;
   } catch (error) {
     console.error("Detailed Gradio error:", error);
-    throw new Error("Failed to get response from AI model. Please try again later.");
+    return "I encountered an error processing your request. Please try again later.";
   }
 };
