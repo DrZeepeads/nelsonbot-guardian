@@ -1,6 +1,6 @@
 import { Client } from '@gradio/client';
 
-const GRADIO_URL = "https://huggingface.co/spaces/Drzee1994/meta-llama-Llama-3.2-1B";
+const GRADIO_URL = import.meta.env.VITE_GRADIO_URL || "https://huggingface.co/spaces/Drzee1994/meta-llama-Llama-3.2-1B";
 
 export const sendMessage = async (message: string): Promise<string> => {
   try {
