@@ -9,10 +9,10 @@ export const API_ENDPOINTS = {
 
 export const API_HEADERS = {
   'Content-Type': 'application/json',
-  'Accept': 'application/json'
+  'Accept': 'application/json',
+  'Authorization': `Bearer ${import.meta.env.VITE_HUGGINGFACE_API_KEY}`
 };
 
-// Updated fallback endpoints to use HTTPS
 export const FALLBACK_ENDPOINTS = {
   primary: 'https://api.nelsonbot.com/chat',
   secondary: 'https://api.nelsonbot.com/llama'

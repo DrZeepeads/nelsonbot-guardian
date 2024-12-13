@@ -1,4 +1,4 @@
-import { FALLBACK_ENDPOINTS, API_HEADERS } from '@/api/apiConfig';
+import { API_HEADERS, FALLBACK_ENDPOINTS } from '@/api/apiConfig';
 import { generateResponse as huggingfaceGenerate } from './huggingfaceService';
 
 export const llamaApi = {

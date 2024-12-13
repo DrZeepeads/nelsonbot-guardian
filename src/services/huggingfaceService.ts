@@ -1,4 +1,4 @@
-import { API_ENDPOINTS } from '@/api/apiConfig';
+import { API_ENDPOINTS, API_HEADERS } from '@/api/apiConfig';
 
 export const generateResponse = async (message: string): Promise<string> => {
   try {
@@ -7,8 +7,8 @@ export const generateResponse = async (message: string): Promise<string> => {
     const response = await fetch(API_ENDPOINTS.huggingface, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer hf_dummy_key' // Replace with actual key in production
+        ...API_HEADERS,
+        'Authorization': `Bearer ${import.meta.env.VITE_HUGGINGFACE_API_KEY}`
       },
       body: JSON.stringify({
         inputs: message,
@@ -16,6 +16,7 @@ export const generateResponse = async (message: string): Promise<string> => {
           max_length: 100,
           temperature: 0.7,
           top_p: 0.9,
+          return_full_text: false
         }
       })
     });
