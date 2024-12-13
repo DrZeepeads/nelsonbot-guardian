@@ -16,7 +16,7 @@ export const llamaApi = {
       console.error('Gradio API error:', error);
     }
 
-    // Generate context-aware fallback response
+    // If Gradio fails, return a context-aware fallback response
     console.log('Using offline fallback response');
     const lowerPrompt = prompt.toLowerCase();
     
