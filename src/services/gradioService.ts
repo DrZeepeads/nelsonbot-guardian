@@ -1,25 +1,36 @@
 import { Client } from '@gradio/client';
 
-const GRADIO_URL = import.meta.env.VITE_GRADIO_URL || "https://huggingface.co/spaces/Drzee1994/meta-llama-Llama-3.2-1B";
+const GRADIO_URL = import.meta.env.VITE_GRADIO_URL;
+
+if (!GRADIO_URL) {
+  console.error('GRADIO_URL is not defined in environment variables');
+}
 
 export const sendMessage = async (message: string): Promise<string> => {
   try {
-    const client = new Client(GRADIO_URL);
     console.log("Connecting to Gradio with URL:", GRADIO_URL);
+    const client = new Client(GRADIO_URL);
     
-    const result: unknown = await client.predict(message, {
-      apiName: "/predict"
-    });
+    const result = await client.predict("/predict", [
+      message, // Input message
+    ]);
+
+    if (!result) {
+      throw new Error('No response from Gradio API');
+    }
+
+    console.log("Raw Gradio response:", result);
     
-    // Robust type checking and fallback
-    const processedResult = result !== null && result !== undefined 
-      ? String(result).trim() 
-      : "I'm sorry, but I couldn't generate a response. Please try again.";
-    
-    console.log("Gradio response:", processedResult);
+    // Handle the response based on its structure
+    const processedResult = Array.isArray(result.data) 
+      ? result.data[0] 
+      : typeof result.data === 'string' 
+        ? result.data 
+        : JSON.stringify(result.data);
+
     return processedResult;
   } catch (error) {
     console.error("Detailed Gradio error:", error);
-    return "I encountered an error processing your request. Please try again later.";
+    throw new Error('Failed to get response from Gradio API: ' + (error as Error).message);
   }
 };
