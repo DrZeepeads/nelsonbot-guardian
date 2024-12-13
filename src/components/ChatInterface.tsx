@@ -2,9 +2,20 @@ import { useState } from "react";
 import { Mic, Send, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
+import { sendMessage } from "@/services/gradioService";
+
+interface ChatMessage {
+  text: string;
+  isUser: boolean;
+}
 
 export const ChatInterface = () => {
   const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+
   const suggestions = [
     "Pediatric fever management",
     "Vaccination schedule",
@@ -12,10 +23,28 @@ export const ChatInterface = () => {
     "Common allergies",
   ];
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (message.trim()) {
-      console.log("Sending message:", message);
+      setIsLoading(true);
+      const userMessage = message.trim();
       setMessage("");
+      
+      // Add user message to chat
+      setMessages(prev => [...prev, { text: userMessage, isUser: true }]);
+
+      try {
+        // Get AI response
+        const response = await sendMessage(userMessage);
+        setMessages(prev => [...prev, { text: response, isUser: false }]);
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to get response from AI. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -32,6 +61,22 @@ export const ChatInterface = () => {
         <p className="text-gray-600 text-center max-w-md">
           Your AI assistant for pediatric insights, powered by the Nelson Textbook of Pediatrics
         </p>
+        
+        {/* Chat Messages */}
+        <div className="w-full max-w-2xl space-y-4 overflow-y-auto">
+          {messages.map((msg, index) => (
+            <div
+              key={index}
+              className={`p-4 rounded-lg ${
+                msg.isUser
+                  ? "bg-medical-primary text-white ml-auto"
+                  : "bg-medical-accent text-medical-primary"
+              } max-w-[80%] ${msg.isUser ? "ml-auto" : "mr-auto"}`}
+            >
+              {msg.text}
+            </div>
+          ))}
+        </div>
         
         {/* Suggestions */}
         <div className="flex flex-wrap justify-center gap-2 max-w-md">
@@ -59,6 +104,8 @@ export const ChatInterface = () => {
             onChange={(e) => setMessage(e.target.value)}
             placeholder="Type your medical query..."
             className="flex-1 border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+            onKeyPress={(e) => e.key === "Enter" && handleSend()}
+            disabled={isLoading}
           />
           
           <Button variant="ghost" size="icon">
@@ -67,7 +114,7 @@ export const ChatInterface = () => {
           
           <Button 
             onClick={handleSend}
-            disabled={!message.trim()}
+            disabled={!message.trim() || isLoading}
             className="bg-medical-primary hover:bg-medical-primary/90"
           >
             <Send className="h-5 w-5" />
