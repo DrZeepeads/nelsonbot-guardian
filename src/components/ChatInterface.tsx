@@ -25,23 +25,25 @@ export default function ChatInterface() {
   ];
 
   return (
-    <div className="flex flex-col">
-      {!messages.length ? (
-        <div className="space-y-4">
-          <SuggestionList 
-            suggestions={suggestions} 
-            onSuggestionClick={(suggestion) => {
-              sendMessage(suggestion);
-            }}
-          />
-        </div>
-      ) : (
-        <div className="space-y-4 mb-20">
-          <MessageList messages={messages} />
-        </div>
-      )}
+    <div className="flex flex-col h-full relative pb-24">
+      <div className="flex-1 overflow-y-auto">
+        {!messages.length ? (
+          <div className="space-y-4">
+            <SuggestionList 
+              suggestions={suggestions} 
+              onSuggestionClick={(suggestion) => {
+                sendMessage(suggestion);
+              }}
+            />
+          </div>
+        ) : (
+          <div className="space-y-4 mb-4">
+            <MessageList messages={messages} />
+          </div>
+        )}
+      </div>
       
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4">
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 z-50">
         <div className="container mx-auto max-w-2xl flex items-center gap-2">
           <Button 
             variant="ghost" 
@@ -63,7 +65,7 @@ export default function ChatInterface() {
           <Button 
             onClick={handleSend}
             disabled={!input.trim() || isLoading}
-            className="shrink-0 bg-blue-500 hover:bg-blue-600 text-white"
+            className="shrink-0 bg-primary hover:bg-primary-dark text-white"
             size="icon"
           >
             <Send className="h-5 w-5" />
