@@ -27,27 +27,22 @@ export const ChatInterface = () => {
   return (
     <div className="flex flex-col h-screen pt-16 pb-4">
       <div className="flex-1 flex flex-col items-center justify-center space-y-6 p-4">
-        <div className="w-24 h-24 bg-medical-accent rounded-full flex items-center justify-center">
-          <span className="text-4xl">👶</span>
-        </div>
-        
-        <h2 className="text-2xl font-semibold text-medical-primary text-center">
-          Welcome to NelsonBot
-        </h2>
-        
-        <p className="text-gray-600 text-center max-w-md">
-          Your AI assistant for pediatric insights, powered by the Nelson Textbook of Pediatrics
-        </p>
-        
-        <div className="w-full max-w-2xl bg-white rounded-lg shadow-sm">
+        <div className="w-full max-w-2xl bg-white rounded-lg">
           <MessageList messages={messages} />
           
-          <div className="p-4 border-t">
-            <div className="flex items-center gap-2">
+          <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t">
+            {!messages.length ? (
+              <SuggestionList 
+                suggestions={suggestions} 
+                onSuggestionClick={sendMessage}
+              />
+            ) : null}
+            
+            <div className="flex items-center gap-2 max-w-2xl mx-auto">
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Type your medical query..."
+                placeholder="Ask about pediatric topics..."
                 className="flex-1"
                 onKeyPress={(e) => e.key === "Enter" && handleSend()}
                 disabled={isLoading}
@@ -56,18 +51,13 @@ export const ChatInterface = () => {
               <Button 
                 onClick={handleSend}
                 disabled={!input.trim() || isLoading}
-                className="bg-medical-primary hover:bg-medical-primary/90"
+                className="bg-medical-primary hover:bg-medical-primary/90 text-white rounded-full p-3 h-auto"
               >
                 <Send className="h-5 w-5" />
               </Button>
             </div>
           </div>
         </div>
-        
-        <SuggestionList 
-          suggestions={suggestions} 
-          onSuggestionClick={sendMessage} 
-        />
       </div>
     </div>
   );

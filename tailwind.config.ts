@@ -25,7 +25,7 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         medical: {
-          primary: "#0A4DA6",
+          primary: "#006B5F", // Dark teal from the image
           secondary: "#60A5FA",
           accent: "#E0F2FE",
         },
