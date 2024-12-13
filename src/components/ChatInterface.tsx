@@ -1,10 +1,21 @@
 import { useChat } from "@/hooks/useChat";
+import { useState } from "react";
+import { Send } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import MessageList from "./chat/MessageList";
 import SuggestionList from "./chat/SuggestionList";
-import ChatInput from "./chat/ChatInput";
 
 export const ChatInterface = () => {
   const { messages, isLoading, sendMessage } = useChat();
+  const [input, setInput] = useState("");
+
+  const handleSend = () => {
+    if (input.trim()) {
+      sendMessage(input);
+      setInput("");
+    }
+  };
 
   const suggestions = [
     "What are common symptoms of pediatric fever?",
@@ -28,18 +39,36 @@ export const ChatInterface = () => {
           Your AI assistant for pediatric insights, powered by the Nelson Textbook of Pediatrics
         </p>
         
-        <MessageList messages={messages} />
+        <div className="w-full max-w-2xl bg-white rounded-lg shadow-sm">
+          <MessageList messages={messages} />
+          
+          <div className="p-4 border-t">
+            <div className="flex items-center gap-2">
+              <Input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Type your medical query..."
+                className="flex-1"
+                onKeyPress={(e) => e.key === "Enter" && handleSend()}
+                disabled={isLoading}
+              />
+              
+              <Button 
+                onClick={handleSend}
+                disabled={!input.trim() || isLoading}
+                className="bg-medical-primary hover:bg-medical-primary/90"
+              >
+                <Send className="h-5 w-5" />
+              </Button>
+            </div>
+          </div>
+        </div>
         
         <SuggestionList 
           suggestions={suggestions} 
           onSuggestionClick={sendMessage} 
         />
       </div>
-
-      <ChatInput
-        isLoading={isLoading}
-        onSend={sendMessage}
-      />
     </div>
   );
 };
