@@ -1,11 +1,4 @@
-import { API_HEADERS, FALLBACK_ENDPOINTS } from '@/api/apiConfig';
-
-const MOCK_RESPONSES = {
-  default: "I'm here to help with pediatric questions. What would you like to know?",
-  error: "I apologize, but I'm having trouble connecting right now. Please try asking your question again.",
-  pediatric: "Based on pediatric guidelines, I can provide general information about children's health. However, for specific medical advice, please consult with your healthcare provider.",
-  connection: "I'm currently experiencing connection issues. Here's what I know about your query based on general pediatric knowledge: ",
-};
+import { FALLBACK_ENDPOINTS, API_HEADERS } from '@/api/apiConfig';
 
 export const llamaApi = {
   async generateResponse(prompt: string): Promise<string> {
@@ -16,9 +9,7 @@ export const llamaApi = {
       console.log('Trying Hugging Face endpoint...');
       const response = await fetch(FALLBACK_ENDPOINTS.primary, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: API_HEADERS,
         body: JSON.stringify({
           inputs: prompt,
           parameters: {
@@ -71,9 +62,9 @@ export const llamaApi = {
         lowerPrompt.includes('child') || 
         lowerPrompt.includes('baby') ||
         lowerPrompt.includes('infant')) {
-      return MOCK_RESPONSES.pediatric;
+      return "Based on pediatric guidelines, I can provide general information about children's health. However, for specific medical advice, please consult with your healthcare provider.";
     }
     
-    return MOCK_RESPONSES.default;
+    return "I'm here to help with pediatric questions. What would you like to know?";
   }
 };
