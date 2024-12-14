@@ -1,17 +1,21 @@
 import React, { useState } from "react";
 import { useChat } from "@/hooks/useChat";
-import { Send, Plus, FileText } from "lucide-react";
+import { Send, FileText, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
+import { Progress } from "@/components/ui/progress";
 import MessageList from "./chat/MessageList";
 import SuggestionList from "./chat/SuggestionList";
 import { parsePDFContent } from "@/utils/pdfUtils";
-import { pdfService } from "@/services/pdfService";
+import { uploadToCloudinary } from "@/services/cloudinaryService";
 
 export default function ChatInterface() {
   const { messages, isLoading, sendMessage } = useChat();
   const [input, setInput] = useState("");
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
+  const [pdfPreview, setPdfPreview] = useState<string | null>(null);
   const { toast } = useToast();
 
   const handleSend = () => {
@@ -25,39 +29,40 @@ export default function ChatInterface() {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    const validTypes = ['application/pdf', 'text/plain'];
-    if (!validTypes.includes(file.type)) {
-      toast({
-        title: "Invalid file type",
-        description: "Please upload a PDF or TXT file",
-        variant: "destructive",
-      });
-      return;
-    }
-
     try {
-      // First upload the file to Vercel
-      await pdfService.uploadFile(file);
+      setIsUploading(true);
+      setUploadProgress(0);
+
+      // Upload to Cloudinary with progress tracking
+      const cloudinaryUrl = await uploadToCloudinary(file, (progress) => {
+        setUploadProgress(progress);
+      });
+
+      // Set preview URL
+      setPdfPreview(cloudinaryUrl);
+
       toast({
         title: "Success",
-        description: "File uploaded successfully",
+        description: "PDF uploaded successfully",
       });
 
-      // Then process the content
-      if (file.type === 'application/pdf') {
-        const content = await parsePDFContent(file);
-        sendMessage(`Analyzing PDF content: ${content.substring(0, 500)}...`);
-      } else {
-        const content = await file.text();
-        sendMessage(`Analyzing text content: ${content.substring(0, 500)}...`);
-      }
+      // Process the content
+      const content = await parsePDFContent(file);
+      sendMessage(`Analyzing PDF content: ${content.substring(0, 500)}...`);
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to process file",
+        description: error instanceof Error ? error.message : "Failed to upload PDF",
         variant: "destructive",
       });
+    } finally {
+      setIsUploading(false);
+      setUploadProgress(0);
     }
+  };
+
+  const clearPreview = () => {
+    setPdfPreview(null);
   };
 
   const suggestions = [
@@ -85,21 +90,51 @@ export default function ChatInterface() {
           </div>
         )}
       </div>
+
+      {isUploading && (
+        <div className="fixed bottom-24 left-0 right-0 bg-white p-4 border-t">
+          <div className="container mx-auto max-w-2xl">
+            <Progress value={uploadProgress} className="w-full" />
+            <p className="text-sm text-gray-500 mt-2">Uploading: {uploadProgress}%</p>
+          </div>
+        </div>
+      )}
+      
+      {pdfPreview && (
+        <div className="fixed bottom-24 left-0 right-0 bg-white p-4 border-t">
+          <div className="container mx-auto max-w-2xl flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <FileText className="h-5 w-5 text-blue-500" />
+              <span className="text-sm">PDF uploaded successfully</span>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={clearPreview}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              <X className="h-5 w-5" />
+            </Button>
+          </div>
+        </div>
+      )}
       
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 z-50">
         <div className="container mx-auto max-w-2xl flex items-center gap-2">
           <input
             type="file"
-            accept=".pdf,.txt"
+            accept=".pdf"
             id="pdf-upload"
             className="hidden"
             onChange={handleFileUpload}
+            disabled={isUploading}
           />
           <Button 
             variant="ghost" 
             size="icon"
             className="shrink-0 text-gray-400 hover:text-gray-600"
             onClick={() => document.getElementById('pdf-upload')?.click()}
+            disabled={isUploading}
           >
             <FileText className="h-5 w-5" />
           </Button>
@@ -110,12 +145,12 @@ export default function ChatInterface() {
             placeholder="Ask about pediatric topics..."
             className="flex-1"
             onKeyPress={(e) => e.key === "Enter" && handleSend()}
-            disabled={isLoading}
+            disabled={isLoading || isUploading}
           />
           
           <Button 
             onClick={handleSend}
-            disabled={!input.trim() || isLoading}
+            disabled={!input.trim() || isLoading || isUploading}
             className="shrink-0 bg-primary hover:bg-primary-dark text-white"
             size="icon"
           >
