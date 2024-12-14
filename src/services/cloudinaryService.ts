@@ -1,71 +1,62 @@
-import { v2 as cloudinary } from 'cloudinary';
-
-interface UploadProgressCallback {
-  (progress: number): void;
-}
-
 export const uploadToCloudinary = async (
   file: File,
-  onProgress?: UploadProgressCallback
+  onProgress?: (progress: number) => void
 ): Promise<string> => {
+  // Validate file type and size
+  if (!file.type.includes('pdf')) {
+    throw new Error('Only PDF files are allowed');
+  }
+
+  const maxSize = 10 * 1024 * 1024; // 10MB
+  if (file.size > maxSize) {
+    throw new Error('File size must be less than 10MB');
+  }
+
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
+  
   try {
-    // Validate file type
-    if (!file.type.includes('pdf')) {
-      throw new Error('Only PDF files are allowed');
+    const response = await fetch(
+      `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/upload`,
+      {
+        method: 'POST',
+        body: formData,
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Upload failed');
     }
 
-    // Validate file size (max 10MB)
-    const maxSize = 10 * 1024 * 1024; // 10MB in bytes
-    if (file.size > maxSize) {
-      throw new Error('File size must be less than 10MB');
-    }
-
-    // Convert file to base64
-    const base64Data = await new Promise<string>((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result as string);
-      reader.readAsDataURL(file);
-    });
-
-    // Upload to Cloudinary with progress monitoring
-    const result = await new Promise<any>((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      const formData = new FormData();
-
-      formData.append('file', base64Data);
-      formData.append('upload_preset', process.env.VITE_CLOUDINARY_UPLOAD_PRESET!);
-
-      xhr.upload.onprogress = (e) => {
-        if (e.lengthComputable && onProgress) {
-          const progress = Math.round((e.loaded * 100) / e.total);
-          onProgress(progress);
-        }
-      };
-
-      xhr.onload = () => {
-        if (xhr.status === 200) {
-          resolve(JSON.parse(xhr.responseText));
-        } else {
-          reject(new Error('Upload failed'));
-        }
-      };
-
-      xhr.onerror = () => reject(new Error('Upload failed'));
-      
-      xhr.open('POST', `https://api.cloudinary.com/v1_1/${process.env.VITE_CLOUDINARY_CLOUD_NAME}/upload`);
-      xhr.send(formData);
-    });
-
-    return result.secure_url;
+    const data = await response.json();
+    return data.secure_url;
   } catch (error) {
     console.error('Cloudinary upload error:', error);
-    throw error;
+    throw new Error('Failed to upload file to Cloudinary');
   }
 };
 
 export const deleteFromCloudinary = async (publicId: string): Promise<void> => {
   try {
-    await cloudinary.uploader.destroy(publicId);
+    const response = await fetch(
+      `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/destroy`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          public_id: publicId,
+          api_key: import.meta.env.VITE_CLOUDINARY_API_KEY,
+          timestamp: new Date().getTime(),
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Delete failed');
+    }
   } catch (error) {
     console.error('Cloudinary delete error:', error);
     throw new Error('Failed to delete file from Cloudinary');

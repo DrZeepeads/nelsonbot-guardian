@@ -3,7 +3,7 @@ import { useChat } from "@/hooks/useChat";
 import { Send, FileText, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
 import MessageList from "./chat/MessageList";
 import SuggestionList from "./chat/SuggestionList";
@@ -33,12 +33,11 @@ export default function ChatInterface() {
       setIsUploading(true);
       setUploadProgress(0);
 
-      // Upload to Cloudinary with progress tracking
+      // Upload to Cloudinary
       const cloudinaryUrl = await uploadToCloudinary(file, (progress) => {
         setUploadProgress(progress);
       });
 
-      // Set preview URL
       setPdfPreview(cloudinaryUrl);
 
       toast({
@@ -46,7 +45,7 @@ export default function ChatInterface() {
         description: "PDF uploaded successfully",
       });
 
-      // Process the content
+      // Process the content if needed
       const content = await parsePDFContent(file);
       sendMessage(`Analyzing PDF content: ${content.substring(0, 500)}...`);
     } catch (error) {
@@ -160,4 +159,3 @@ export default function ChatInterface() {
       </div>
     </div>
   );
-}
