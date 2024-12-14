@@ -33,6 +33,12 @@ export default function ChatInterface() {
       setIsUploading(true);
       setUploadProgress(0);
 
+      // Show upload starting toast
+      toast({
+        title: "Upload Started",
+        description: "Uploading your PDF file...",
+      });
+
       // Upload to Cloudinary
       const cloudinaryUrl = await uploadToCloudinary(file, (progress) => {
         setUploadProgress(progress);
@@ -49,6 +55,7 @@ export default function ChatInterface() {
       const content = await parsePDFContent(file);
       sendMessage(`Analyzing PDF content: ${content.substring(0, 500)}...`);
     } catch (error) {
+      console.error('Upload error:', error);
       toast({
         title: "Error",
         description: error instanceof Error ? error.message : "Failed to upload PDF",

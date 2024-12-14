@@ -17,8 +17,15 @@ export const uploadToCloudinary = async (
   formData.append('upload_preset', import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
   
   try {
+    console.log('Starting upload to Cloudinary...');
+    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+    
+    if (!cloudName) {
+      throw new Error('Cloudinary cloud name is not configured');
+    }
+
     const response = await fetch(
-      `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/upload`,
+      `https://api.cloudinary.com/v1_1/${cloudName}/upload`,
       {
         method: 'POST',
         body: formData,
@@ -26,14 +33,17 @@ export const uploadToCloudinary = async (
     );
 
     if (!response.ok) {
-      throw new Error('Upload failed');
+      const errorData = await response.json();
+      console.error('Cloudinary upload error:', errorData);
+      throw new Error(errorData.message || 'Upload failed');
     }
 
     const data = await response.json();
+    console.log('Upload successful:', data);
     return data.secure_url;
   } catch (error) {
-    console.error('Cloudinary upload error:', error);
-    throw new Error('Failed to upload file to Cloudinary');
+    console.error('Upload error:', error);
+    throw error;
   }
 };
 
